@@ -9,22 +9,45 @@
 	<link rel = 'stylesheet' type = 'text/css' href ="static/bootstrap.min.css">
 	<link rel = "stylesheet" type = "text/css" href ="static/bootstrap-responsive.min.css">
 </head>
+<div class = "container">
 <div class = "row">
 	<div class = "span6">
-		<form class = "well" action="/result1", method = 'POST'>
-			<label>用乎的id</label>
-			<input type = "text" class="span3" placeholder="输入用户的微博id号">
+		<form class = "well form-inline" action="/getFanNumber", method = 'POST'>
+			<label>输入用户ID获得用户粉丝数目</label>
+			<input type = "text" class="span3" name = "user_id" placeholder="输入用户的id号">
 			<button type="submit" class="btm">submit</button>
 		    </input>
 	    </form>
     </div>
+
     <div class = "span6">
-	   <form class = "well" action="/result2", method = 'POST'>
-			<label>微博的id</label>
-			<input type = "text" class="span3" placeholder="输入上一条微博的id号">
+	   <form class = "well form-inline" action="/getFanList", method = 'POST'>
+			<label>输入用户ID获得用户的粉丝列表</label>
+			<input type = "text" class="span3"  name = "user_id" placeholder="输入用户的id号">
 			<button type="submit" class="btm">submit</button>
 		    </input>
 	    </form>
     </div>
+
+    <div class = "span6">
+	   <form class = "well form-inline" action="/getLastWeiboId", method = 'POST'>
+			<label>输入用户ID获得用户最后发布的一条微博ID</label>
+			<input type = "text" class="span3"  name = "user_id" placeholder="输入用户的id号">
+			<button type="submit" class="btm">submit</button>
+		    </input>
+	    </form>
+    </div>
+
+    <div class = "span6">
+	   <form class = "well form-inline" action="/getWeiboInfoByTime", method = 'POST'>
+			<label>输入用户最后一条微博ID获得该时间以后的微博评论数转发数</label>
+			<input type = "text" class="span3"  name = "user_id" placeholder="输入用户的id号">
+			<input type = "text" class="span3"  name = "weibo_id" placeholder="输入上一条微博的id号">
+			<button type="submit" class="btm">submit</button>
+		    </input>
+	    </form>
+    </div>
+
+</div>
 </div>
 </html>

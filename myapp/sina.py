@@ -9,7 +9,7 @@ CALLBACK_URL = "https://api.weibo.com/oauth2/default.html"
 
 
 client = APIClient(APP_KEY, APP_SECRET, CALLBACK_URL);
-access_token = '2.00FvIAQCsnrWbD081ec68b1eRsj_lB'
+access_token = '2.00FvIAQCsnrWbDa7ddb619b309OgRF'
 expires_in = 1544932574
 client.set_access_token(access_token, expires_in)
 
@@ -31,14 +31,21 @@ def get_fans_id(user_id):
     获取用户的粉丝的uid列表
     """
     fans_id_list = []
-    fans_id_result = client.get.friendships__followers__ids(uid =  user_id)
-    next_cursor = 1
-    while next_cursor:
+    #fans_id_result = client.get.friendships__followers__ids(uid =  user_id)
+    next_cursor = 0
+    while True:
+        fans_id_result = client.get.friendships__followers__ids(uid = user_id,count = 4999,cursor=next_cursor)
         fans_id_list.extend(fans_id_result["ids"])
-        print fans_id_result['ids'][0]
+        print fans_id_result['total_number']
         next_cursor = fans_id_result["next_cursor"]
-        fans_id_result = client.get.friendships__followers__ids(uid = user_id)
+        print next_cursor
+        if not next_cursor:
+            break
     return fans_id_list
+
+def get_fans_number(user_id):
+    fans_number_result = client.get.friendships__followers__ids(uid = user_id,count = 1)
+    return fans_number_result['total_number']
 
 def get_two_fans_net(user_id):
     """
@@ -106,11 +113,28 @@ def get_weibo_ids_since(user_id,since_id):
     total_weibo_ids = []
     weibo_ids_result = client.get.statuses__user_timeline__ids(uid = user_id,since_id=since_id,count = 1,page=1)
     total_weibo_num = weibo_ids_result['total_number']
-    total_pages = total_weibo_num/100  if not total_weibo_num % 100  else total_weibo_num/100 +1 
-    for page in range(1,total_pages+1):
+    #total_pages = total_weibo_num/100  if not total_weibo_num % 100  else total_weibo_num/100 +1 
+    #for page in range(1,total_pages+1):
+    #    weibo_ids_result = client.get.statuses__user_timeline__ids(uid = user_id,since_id = since_id,count = 100,page = page)
+    #    total_weibo_ids.extend(weibo_ids_result['statuses'])
+    page = 1
+    while True:
         weibo_ids_result = client.get.statuses__user_timeline__ids(uid = user_id,since_id = since_id,count = 100,page = page)
+        if not weibo_ids_result['statuses']:
+            break
         total_weibo_ids.extend(weibo_ids_result['statuses'])
+        page+=1
+        print page
+
     result_data['weibo_num']=total_weibo_num
+    times = len(total_weibo_ids)/100 +1
+    print "times %d" % times
+    for i in range(times):
+        ids = ','.join(total_weibo_ids[i*99:(i+1)*99])
+        result_re_co = client.get.statuses__count(ids = ids)
+        result_data['weibo'].extend(result_re_co)
+        print i
+    """
     for weibo_id in total_weibo_ids:
         node = {}
         node['id']=weibo_id
@@ -118,6 +142,7 @@ def get_weibo_ids_since(user_id,since_id):
         node['reposts'] = result_re_co[0]['reposts']
         node['comments'] = result_re_co[0]['comments']
         result_data['weibo'].append(node)
+    """
     return result_data
 
 
@@ -126,7 +151,7 @@ def get_user_fans_num(user_id):
     return result_data[0]['followers_count']
 
 
-def get_nnet_ode_num(net):
+def get_net_node_num(net):
     count=1
     all_ids=[net['id']]
     for node in net['fans']:
@@ -150,7 +175,12 @@ if __name__ == "__main__":
     #t = json.dumps(result)
     #fd = open('first1.json','w')
     #fd.write(t)
-    print get_edges("first1.json")
+    #print get_edges("first1.json")
+    #print get_fans_id(1942602760)
+    #print get_fans_number(1942602760)
+    #print client.get.statuses__user_timeline__ids( uid = 1942602760 )
+    #print client.get.statuses__count(ids = "3477154379129761,3475776110079813,3478471575492575")
+    print  get_weibo_ids_since(1942602760,3475671034291551)
 
 
 
