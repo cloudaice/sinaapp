@@ -26,21 +26,19 @@ class getFanList:
 
 class getFanNumber:
     def POST(self):
-        req_data = web.input()
-        user_id = req_data.user_id
-        return get_fans_number(user_id)
+        return 'hello'
 
 class getLastWeiboId:
     def POST(self):
         req_data = web.input()
-        weibo_id = req_data.user_id
+        weibo_id = req_data.user_id.strip()
         return get_last_weibo_id(weibo_id)
 
 class getWeiboInfoByTime:
     def POST(self):
         req_data = web.input()
-        user_id = req_data.user_id
-        weibo_id = req_data.weibo_id
+        user_id = req_data.user_id.strip()
+        weibo_id = req_data.weibo_id.strip()
         return get_weibo_ids_since(user_id,weibo_id)
 
 

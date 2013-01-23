@@ -2,14 +2,15 @@
 from weibo import APIClient
 import time
 import json
+import webbrowser
 
 APP_KEY = "3302956248"
 APP_SECRET="a3d8968cc21fd8115ad6e90994755cfc"
 CALLBACK_URL = "https://api.weibo.com/oauth2/default.html"
-
+#CALLBACK_URL = "http://localhost:8080/index.html"
 
 client = APIClient(APP_KEY, APP_SECRET, CALLBACK_URL);
-access_token = '2.00FvIAQCsnrWbDa7ddb619b309OgRF'
+access_token = '2.00FvIAQCsnrWbDfe1cbe66e3rAaLRE'
 expires_in = 1544932574
 client.set_access_token(access_token, expires_in)
 
@@ -44,6 +45,9 @@ def get_fans_id(user_id):
     return fans_id_list
 
 def get_fans_number(user_id):
+    """
+    获得用户的粉丝数目
+    """
     fans_number_result = client.get.friendships__followers__ids(uid = user_id,count = 1)
     return fans_number_result['total_number']
 
@@ -113,6 +117,8 @@ def get_weibo_ids_since(user_id,since_id):
     total_weibo_ids = []
     weibo_ids_result = client.get.statuses__user_timeline__ids(uid = user_id,since_id=since_id,count = 1,page=1)
     total_weibo_num = weibo_ids_result['total_number']
+    if  not weibo_ids_result['statuses']:
+        return "这段时间此人没有发微博"
     #total_pages = total_weibo_num/100  if not total_weibo_num % 100  else total_weibo_num/100 +1 
     #for page in range(1,total_pages+1):
     #    weibo_ids_result = client.get.statuses__user_timeline__ids(uid = user_id,since_id = since_id,count = 100,page = page)
@@ -147,9 +153,29 @@ def get_weibo_ids_since(user_id,since_id):
 
 
 def get_user_fans_num(user_id):
+    """
+    获得用户粉丝数目
+    """
     result_data = client.get.users__counts(user_id)
     return result_data[0]['followers_count']
 
+def get_all_user_fans(user_ids):
+    """
+    批量获取用户的粉丝数目
+    """
+    fans_list = get_fans_id(user_ids)
+    data = {}
+    num =0
+    data['1level']=len(fans_list)
+    times = len(fans_list)/100+1
+    print 'times %d' % times
+    for i in range(times):
+        ids = ','.join(fans_list[i*99:(i+1)*99])
+        result_fans = client.get.users__counts(ids=ids)
+        for fan in result_fans:
+            num+=fan['followers_count']
+    data['2level']=num
+    return data
 
 def get_net_node_num(net):
     count=1
@@ -180,7 +206,6 @@ if __name__ == "__main__":
     #print get_fans_number(1942602760)
     #print client.get.statuses__user_timeline__ids( uid = 1942602760 )
     #print client.get.statuses__count(ids = "3477154379129761,3475776110079813,3478471575492575")
-    print  get_weibo_ids_since(1942602760,3475671034291551)
-
-
-
+    #print  get_weibo_ids_since(1942602760,3475671034291551)
+    print  get_weibo_ids_since(1560442584,3481777270571379)
+    #print get_all_user_fans(1942602760)
